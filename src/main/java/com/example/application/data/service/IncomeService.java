@@ -26,7 +26,6 @@ public class IncomeService {
         return collectionsApiFuture.get();
     }
 
-
     public List<Income> getIncome(String email) throws ExecutionException, InterruptedException, NullPointerException {
         Firestore dbFirestore = FirestoreClient.getFirestore();
         ApiFuture<QuerySnapshot> future = dbFirestore.collection("users").document(email).collection("incomes").get();
@@ -37,13 +36,12 @@ public class IncomeService {
         Double amount;
 
         for (DocumentSnapshot document : documents) {
-            if (document.getData().get("amount").getClass().getSimpleName() == "Double") {
+            if (document.getData().get("amount").getClass().getSimpleName().equals("Double")) {
                 amount = (Double) document.getData().get("amount");
             } else {
                 amount =  ((Number)document.getData().get("amount")).doubleValue();
             }
 
-            System.out.println(document.getId());
 
             String name = (String) document.getData().get("name");
             all_incomes.add(new Income(amount, name, document.getId()));
@@ -75,29 +73,6 @@ public class IncomeService {
                 .document(id)
                 .delete();
 
-        System.out.println("Update time : " + collectionsApiFuture.get().getUpdateTime());
-
         return collectionsApiFuture.get();
     }
-
-   /* public Income getIncome(String email) throws ExecutionException, InterruptedException {
-        Firestore dbFirestore = FirestoreClient.getFirestore();
-        DocumentReference documentReference = dbFirestore.collection("users").document(email).collection("incomes").document("Y6fqIAZzk50wFqbVCjL7");
-        ApiFuture<DocumentSnapshot> future = documentReference.get();
-
-        DocumentSnapshot document = future.get();
-
-        if(document.exists()) {
-            Double amount = (Double) document.getData().get("amount");
-            String name = (String) document.getData().get("name");
-
-            Income income = new Income(amount, name);
-
-            return income;
-        } else {
-            System.out.println("NEMA DOC");
-            return null;
-        }
-    }*/
-
 }

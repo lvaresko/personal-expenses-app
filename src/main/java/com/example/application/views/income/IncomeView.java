@@ -26,14 +26,6 @@ import com.vaadin.flow.router.Route;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-/*
-try {
-                incomeService.getIncome("neki@vrag.com"); //staticki za sad
-            } catch (ExecutionException | InterruptedException | NullPointerException e) {
-                e.printStackTrace();
-            }
- */
-
 @PageTitle("Income")
 @Route(value = "income", layout = MainLayout.class)
 
@@ -84,7 +76,12 @@ public class IncomeView extends Div implements AfterNavigationObserver {
         Span incomeName = new Span(income.getName());
         incomeName.getStyle().set("font-weight", "bold");
 
-        Span amount = new Span(String.valueOf(income.getAmount()));
+        Span amount = new Span(String.valueOf(income.getAmount()) + " $");
+        if (income.getAmount() < 0) {
+            amount.getElement().getStyle().set("color", "red");
+        } else {
+            amount.getElement().getStyle().set("color", "green");
+        }
         incomeDetails.add(incomeName, amount);
 
         incomeDetails.setSpacing(false);
