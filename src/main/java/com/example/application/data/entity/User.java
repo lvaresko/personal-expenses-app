@@ -1,34 +1,37 @@
 package com.example.application.data.entity;
 
 import com.example.application.data.AbstractEntity;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.persistence.Entity;
 
 @Entity
 public class User extends AbstractEntity {
-    private String email;
-    private String password;
+    private String passwordSalt;
+    private String passwordHash;
 
     public User(){}
 
-    public User(String email, String password) {
-        this.email = email;
-        this.password = password;
+    public User(String password) {
+        this.passwordSalt = RandomStringUtils.random(32);
+        this.passwordHash = DigestUtils.sha1Hex(password + passwordSalt);
+
     }
 
-    public String getEmail() {
-        return email;
+    public String getPasswordSalt() {
+        return passwordSalt;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setPasswordSalt(String passwordSalt) {
+        this.passwordSalt = passwordSalt;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 }

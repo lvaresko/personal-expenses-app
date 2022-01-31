@@ -1,8 +1,6 @@
 package com.example.application.views.register;
 
-import com.example.application.data.service.FirebaseService;
-import com.google.cloud.firestore.Firestore;
-import com.google.firebase.cloud.FirestoreClient;
+import com.example.application.data.service.AuthService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Anchor;
@@ -18,13 +16,11 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 
-import java.util.concurrent.ExecutionException;
-
 @PageTitle("Register")
 @Route(value = "register")
 @RouteAlias("register")
 public class RegisterView extends VerticalLayout {
-    public RegisterView(FirebaseService firebaseService) throws ExecutionException, InterruptedException {
+    public RegisterView(AuthService authService) throws AuthService.AuthException {
         EmailField email = new EmailField("Email");
         PasswordField password = new PasswordField("Password");
         PasswordField password_repeat = new PasswordField("Repeat password");
@@ -33,15 +29,16 @@ public class RegisterView extends VerticalLayout {
         denied.setVisible(false);
 
 
-        Button register = new Button("Login", event -> {
+        Button register = new Button("Register", event -> {
             denied.setVisible(false);
-            if (password.equals(password_repeat)){
+            if (!(password.getValue().equals(password_repeat.getValue()))){
+
                 denied.getElement().setText("Passwords don't match");
                 denied.setVisible(true);
 
             } else {
                 try {
-                    firebaseService.createUser(email.getValue(), password.getValue());
+                    authService.createUser(email.getValue(), password.getValue());
                     UI.getCurrent().navigate("income");
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -70,7 +67,7 @@ public class RegisterView extends VerticalLayout {
         Span newUser = new Span("Already have an account?");
         Anchor login = new Anchor();
         login.setText("Sign in");
-        //register.getElement().addEventListener(e -> register.getUI().ifPresent(ui -> ui.navigate("register")));
+        Button loginAnchor = new Button("Login here", event -> getUI().ifPresent(ui -> ui.navigate("register")));
         footer.add(newUser, login);
 
         layout.setSizeFull();

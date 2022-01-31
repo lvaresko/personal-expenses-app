@@ -16,6 +16,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 
+import java.io.IOException;
+
 
 @PageTitle("Login")
 @Route(value = "login")
@@ -25,14 +27,21 @@ public class LoginView extends VerticalLayout {
     public LoginView(AuthService authService) {
         EmailField email = new EmailField("Email");
         PasswordField password = new PasswordField("Password");
+        Span denied = new Span("Denied");
+        denied.getElement().getThemeList().add("badge error");
+        denied.setVisible(false);
         Button login = new Button("Login", event -> {
+            denied.setVisible(false);
             try {
                 authService.authenticate(email.getValue(), password.getValue());
                 UI.getCurrent().navigate("income");
             } catch (AuthService.AuthException e) {
                 e.printStackTrace();
+                denied.getElement().setText("Wrong email or password input");
+                denied.setVisible(true);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
         });
         login.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
@@ -61,7 +70,7 @@ public class LoginView extends VerticalLayout {
         layout.setMaxHeight("250px");
         layout.setJustifyContentMode(JustifyContentMode.CENTER);
 
-        add(new H1("Login"), layout, footer);
+        add(new H1("Login"), layout, footer, denied);
 
     }
 
