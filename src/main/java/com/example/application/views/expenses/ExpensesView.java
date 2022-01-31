@@ -92,7 +92,7 @@ public class ExpensesView extends Div implements AfterNavigationObserver {
         treeGrid.addColumn(Expense::getAmount).setHeader("Amount");
         treeGrid.addHierarchyColumn(Expense::getDateString).setHeader("Date");
         treeGrid.setWidth("1000px");
-        treeGrid.setHeight("350px");
+        treeGrid.setHeight("500px");
         treeGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER); // no border
 
         tableLayout.add(treeGrid);

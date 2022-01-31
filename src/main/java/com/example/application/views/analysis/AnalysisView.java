@@ -1,30 +1,49 @@
 package com.example.application.views.analysis;
 
+import com.example.application.data.entity.Expense;
+import com.example.application.data.entity.Income;
+import com.example.application.data.service.ExpenseService;
+import com.example.application.data.service.IncomeService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @PageTitle("Analysis")
 
 public class AnalysisView extends HorizontalLayout {
 
-    public AnalysisView() {
+    public AnalysisView() throws ExecutionException, InterruptedException {
+        ExpenseService incomeService = new ExpenseService();
+        var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+
         addClassName("analysis-view");
 
-        RangeSeries series =
-                new RangeSeries("Temperature Ranges",
-                        new Double[]{-51.5,10.9},
-                        new Double[]{-49.0,11.8},
-                        new Double[]{-47.0,10.8});
-
-        // RANDOM CHART
-        Chart chart = new Chart(ChartType.COLUMN);
+        Chart chart = new Chart(ChartType.PIE);
         Configuration conf = chart.getConfiguration();
-        conf.setTitle("Reindeer Kills by Predators");
-        conf.setSubTitle("Kills Grouped by Counties");
+
+        DataSeries series = new DataSeries();
+
+        List<Expense> expenses = incomeService.getExpenses(userEmail);
+        Map<Object, Double> groupedExpenses = expenses.stream()
+                .collect(Collectors.groupingBy(foo -> foo.getCategory(),
+                        Collectors.summingDouble(foo->foo.getAmount())));
+
+
+        for (Map.Entry<Object, Double> entry : groupedExpenses.entrySet()) {
+        series.add(new DataSeriesItem((String) entry.getKey(), entry.getValue()));
+        }
+
+
         conf.addSeries(series);
         add(chart);
 
