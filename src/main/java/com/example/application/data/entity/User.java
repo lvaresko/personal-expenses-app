@@ -11,7 +11,8 @@ public class User extends AbstractEntity {
     private String passwordSalt;
     private String passwordHash;
 
-    public User(){}
+    public User() {
+    }
 
     public User(String password) {
         this.passwordSalt = RandomStringUtils.random(32);

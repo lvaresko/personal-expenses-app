@@ -4,7 +4,6 @@ import com.example.application.data.service.AuthService;
 import com.example.application.views.login.LoginView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -32,7 +31,7 @@ public class RegisterView extends VerticalLayout {
 
         Button register = new Button("Register", event -> {
             denied.setVisible(false);
-            if (!(password.getValue().equals(password_repeat.getValue()))){
+            if (!(password.getValue().equals(password_repeat.getValue()))) {
 
                 denied.getElement().setText("Passwords don't match");
                 denied.setVisible(true);

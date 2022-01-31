@@ -4,16 +4,14 @@ import com.example.application.data.entity.Expense;
 import com.example.application.data.entity.Income;
 import com.example.application.data.service.ExpenseService;
 import com.example.application.data.service.IncomeService;
-import com.example.application.views.MainLayout;
+import com.google.cloud.Timestamp;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
@@ -28,15 +26,9 @@ import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.data.renderer.Renderer;
-import com.google.cloud.Timestamp;
-import io.opencensus.metrics.export.TimeSeries;
 
-import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -65,41 +57,6 @@ public class ExpensesView extends Div implements AfterNavigationObserver {
 
     }
 
-    @Override
-    public void afterNavigation(AfterNavigationEvent event) {
-
-    }
-
-    private Component createTableLayout() {
-        List<Expense> expenses = List.of();
-        ExpenseService expenseService = new ExpenseService();
-
-        try {
-            var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
-            expenses = expenseService.getExpenses(userEmail);
-            System.out.println(expenses);
-        } catch (ExecutionException | InterruptedException | NullPointerException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(expenses.toArray());
-
-        HorizontalLayout tableLayout = new HorizontalLayout();
-        TreeGrid<Expense> treeGrid = new TreeGrid<>();
-
-        treeGrid.setItems(expenses);
-        treeGrid.addColumn(Expense::getCategory).setHeader("Category");
-        treeGrid.addColumn(Expense::getTitle).setHeader("Title");
-        treeGrid.addColumn(Expense::getAmount).setHeader("Amount");
-        treeGrid.addHierarchyColumn(Expense::getDateString).setHeader("Date");
-        treeGrid.setWidth("1000px");
-        treeGrid.setHeight("500px");
-        treeGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER); // no border
-
-        tableLayout.add(treeGrid);
-        return tableLayout;
-    }
-
     private static VerticalLayout createDialogLayout(Dialog dialog) {
         IncomeService incomeService = new IncomeService();
         ExpenseService expenseService = new ExpenseService();
@@ -116,8 +73,7 @@ public class ExpensesView extends Div implements AfterNavigationObserver {
         }
 
         H2 headline = new H2("Add a new expense");
-        headline.getStyle().set("margin", "var(--lumo-space-m) 0 0 0")
-                .set("font-size", "1.5em").set("font-weight", "bold");
+        headline.getStyle().set("margin", "var(--lumo-space-m) 0 0 0").set("font-size", "1.5em").set("font-weight", "bold");
 
         Select<String> selectCategory = new Select<>();
         selectCategory.setLabel("Choose category");
@@ -166,6 +122,40 @@ public class ExpensesView extends Div implements AfterNavigationObserver {
         dialogLayout.getStyle().set("width", "300px").set("max-width", "100%");
 
         return dialogLayout;
+    }
+
+    @Override
+    public void afterNavigation(AfterNavigationEvent event) {
+
+    }
+
+    private Component createTableLayout() {
+        List<Expense> expenses = List.of();
+        ExpenseService expenseService = new ExpenseService();
+
+        try {
+            var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+            expenses = expenseService.getExpenses(userEmail);
+
+        } catch (ExecutionException | InterruptedException | NullPointerException e) {
+            e.printStackTrace();
+        }
+
+
+        HorizontalLayout tableLayout = new HorizontalLayout();
+        TreeGrid<Expense> treeGrid = new TreeGrid<>();
+
+        treeGrid.setItems(expenses);
+        treeGrid.addColumn(Expense::getCategory).setHeader("Category");
+        treeGrid.addColumn(Expense::getTitle).setHeader("Title");
+        treeGrid.addColumn(Expense::getAmount).setHeader("Amount");
+        treeGrid.addHierarchyColumn(Expense::getDateString).setHeader("Date");
+        treeGrid.setWidth("1000px");
+        treeGrid.setHeight("500px");
+        treeGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER); // no border
+
+        tableLayout.add(treeGrid);
+        return tableLayout;
     }
 
 }

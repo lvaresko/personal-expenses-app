@@ -5,9 +5,10 @@ public class Income {
     private String name;
     private Double amount;
 
-    public Income() {}
+    public Income() {
+    }
 
-    public Income(Double amount, String name,String id) {
+    public Income(Double amount, String name, String id) {
         this.id = id;
         this.name = name;
         this.amount = amount;

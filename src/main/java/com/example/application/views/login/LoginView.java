@@ -6,7 +6,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -68,7 +67,6 @@ public class LoginView extends VerticalLayout {
         register.getStyle().set("background", "white");
         register.getStyle().set("vertical-align", "center");
         register.getStyle().set("margin", "0px");
-
 
 
         footer.add(newUser, register);

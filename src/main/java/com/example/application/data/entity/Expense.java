@@ -2,14 +2,15 @@ package com.example.application.data.entity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import com.google.cloud.Timestamp;
 
 public class Expense {
+    Timestamp date;
     private String category;
     private String title;
     private Double amount;
     private String payedWith;
-    Timestamp date;
 
     public Expense(String category, String title, Double amount, String payedWith, Timestamp date) {
         this.category = category;
@@ -64,7 +65,7 @@ public class Expense {
     }
 
     public String getDateString() {
-        SimpleDateFormat formatter= new SimpleDateFormat("HH:mm dd.MM.yyyy.");
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd.MM.yyyy.");
         Date date = this.date.toDate();
         return formatter.format(date);
 

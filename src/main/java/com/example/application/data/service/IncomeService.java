@@ -1,4 +1,5 @@
 package com.example.application.data.service;
+
 import com.example.application.data.entity.Income;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
@@ -16,12 +17,7 @@ public class IncomeService {
         Income income = new Income(amount, name, "");
 
         Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore
-                .collection("users")
-                .document(email)
-                .collection("incomes")
-                .document()
-                .set(income);
+        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("users").document(email).collection("incomes").document().set(income);
 
         return collectionsApiFuture.get();
     }
@@ -39,7 +35,7 @@ public class IncomeService {
             if (document.getData().get("amount").getClass().getSimpleName().equals("Double")) {
                 amount = (Double) document.getData().get("amount");
             } else {
-                amount =  ((Number)document.getData().get("amount")).doubleValue();
+                amount = ((Number) document.getData().get("amount")).doubleValue();
             }
 
 
@@ -58,16 +54,16 @@ public class IncomeService {
 
         for (DocumentSnapshot document : documents) {
             String name = (String) document.getData().get("name");
-            if(name.equals(type)){
+            if (name.equals(type)) {
                 Double amount;
 
                 if (document.getData().get("amount").getClass().getSimpleName().equals("Double")) {
                     amount = (Double) document.getData().get("amount");
                 } else {
-                    amount = ((Number)document.getData().get("amount")).doubleValue();
+                    amount = ((Number) document.getData().get("amount")).doubleValue();
                 }
 
-            return new Income(amount, type, document.getId());
+                return new Income(amount, type, document.getId());
             }
 
         }
@@ -79,24 +75,14 @@ public class IncomeService {
         Income income = new Income(amount, name, id);
 
         Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore
-                .collection("users")
-                .document(email)
-                .collection("incomes")
-                .document(id)
-                .set(income);
+        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("users").document(email).collection("incomes").document(id).set(income);
 
         return collectionsApiFuture.get();
     }
 
     public WriteResult deleteIncome(String email, String id) throws ExecutionException, InterruptedException {
         Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore
-                .collection("users")
-                .document(email)
-                .collection("incomes")
-                .document(id)
-                .delete();
+        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("users").document(email).collection("incomes").document(id).delete();
 
         return collectionsApiFuture.get();
     }

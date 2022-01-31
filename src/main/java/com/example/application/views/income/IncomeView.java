@@ -62,6 +62,97 @@ public class IncomeView extends Div implements AfterNavigationObserver {
         add(headline, grid, dialog1, addButton);
     }
 
+    // -- EDIT INCOME DIALOG --
+    private static VerticalLayout createDialog1(Dialog dialog, Double amount, String id, String incomeName) {
+        IncomeService incomeService = new IncomeService();
+
+        H2 headline = new H2("Edit income");
+        headline.addClassName("dialog_header");
+        headline.getStyle().set("text-align", "center");
+
+        NumberField incomeAmount = new NumberField("Current income");
+        incomeAmount.setValue(amount);
+        Div dollarPrefix = new Div();
+        dollarPrefix.setText("$");
+        incomeAmount.setPrefixComponent(dollarPrefix);
+        incomeAmount.getStyle().set("margin", "0 0 0 0");
+
+        var initial_val = incomeAmount.getValue();
+
+        Button cancelButton = new Button("Cancel", event -> {
+            incomeAmount.setValue(initial_val);
+            dialog.close();
+        });
+        Button saveButton = new Button("Save", event -> {
+            try {
+                var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+                incomeService.editIncome(userEmail, incomeName, id, incomeAmount.getValue()); //staticki za sad
+            } catch (ExecutionException | InterruptedException | NullPointerException e) {
+                e.printStackTrace();
+            }
+            dialog.close();
+            UI.getCurrent().getPage().reload();
+        });
+        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, cancelButton);
+        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+
+        VerticalLayout dialogLayout = new VerticalLayout(headline, incomeAmount, buttonLayout);
+        dialogLayout.addClassName("income_dialog");
+        dialogLayout.setPadding(false);
+        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        return dialogLayout;
+    }
+
+    // -- ADD NEW INCOME DIALOG --
+    private static VerticalLayout createDialog2(Dialog dialog) {
+        IncomeService incomeService = new IncomeService();
+
+        H2 headline = new H2("Add a new income");
+        headline.addClassName("dialog_header");
+
+        TextField incomeName = new TextField("Income name");
+        incomeName.getStyle().set("margin", "0 0 0 0");
+
+        NumberField amount = new NumberField("Amount");
+        amount.setPrefixComponent(VaadinIcon.DOLLAR.create());
+        amount.getStyle().set("margin", "0 0 0 0");
+
+        VerticalLayout fieldLayout = new VerticalLayout(incomeName, amount);
+        fieldLayout.setPadding(false);
+
+        Button cancelButton = new Button("Cancel", event -> {
+            dialog.close();
+            amount.clear();
+            incomeName.clear();
+        });
+        Button saveButton = new Button("Add", event -> {
+            try {
+                var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+                incomeService.saveIncome(userEmail, incomeName.getValue(), amount.getValue()); //staticki za sad
+            } catch (ExecutionException | InterruptedException | NullPointerException e) {
+                e.printStackTrace();
+            }
+
+            dialog.close();
+            amount.clear();
+            incomeName.clear();
+            UI.getCurrent().getPage().reload();
+        });
+        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, cancelButton);
+        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+
+        VerticalLayout dialogLayout = new VerticalLayout(headline, fieldLayout, buttonLayout);
+        dialogLayout.addClassName("income_dialog");
+        dialogLayout.setPadding(false);
+
+        return dialogLayout;
+    }
+
     private HorizontalLayout createCard(Income income) {
         IncomeService incomeService = new IncomeService();
 
@@ -124,7 +215,6 @@ public class IncomeView extends Div implements AfterNavigationObserver {
         return card;
     }
 
-
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
         IncomeService incomeService = new IncomeService();
@@ -158,97 +248,5 @@ public class IncomeView extends Div implements AfterNavigationObserver {
         }
 
         return total_income;
-    }
-
-
-    // -- EDIT INCOME DIALOG --
-    private static VerticalLayout createDialog1(Dialog dialog, Double amount, String id, String incomeName) {
-        IncomeService incomeService = new IncomeService();
-
-        H2 headline = new H2("Edit income");
-        headline.addClassName("dialog_header");
-        headline.getStyle().set("text-align", "center");
-
-        NumberField incomeAmount = new NumberField("Current income");
-        incomeAmount.setValue(amount);
-        Div dollarPrefix = new Div();
-        dollarPrefix.setText("$");
-        incomeAmount.setPrefixComponent(dollarPrefix);
-        incomeAmount.getStyle().set("margin", "0 0 0 0");
-
-        var initial_val = incomeAmount.getValue();
-
-        Button cancelButton = new Button("Cancel", event -> {
-            incomeAmount.setValue(initial_val);
-            dialog.close();
-        });
-        Button saveButton = new Button("Save", event -> {
-            try {
-                var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
-                incomeService.editIncome(userEmail, incomeName, id, incomeAmount.getValue()); //staticki za sad
-            } catch (ExecutionException | InterruptedException | NullPointerException e) {
-                e.printStackTrace();
-            }
-            dialog.close();
-            UI.getCurrent().getPage().reload();
-        });
-        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-        HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, cancelButton);
-        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-
-        VerticalLayout dialogLayout = new VerticalLayout(headline, incomeAmount, buttonLayout);
-        dialogLayout.addClassName("income_dialog");
-        dialogLayout.setPadding(false);
-        dialogLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-
-        return dialogLayout;
-    }
-
-    // -- ADD NEW INCOME DIALOG --
-    private static VerticalLayout createDialog2(Dialog dialog) {
-        IncomeService incomeService = new IncomeService();
-
-        H2 headline = new H2("Add a new income");
-        headline.addClassName("dialog_header");
-
-        TextField incomeName = new TextField("Income name");
-        incomeName.getStyle().set("margin", "0 0 0 0");
-
-        NumberField amount = new NumberField("Amount");
-        amount.setPrefixComponent(VaadinIcon.DOLLAR.create());
-        amount.getStyle().set("margin", "0 0 0 0");
-
-        VerticalLayout fieldLayout = new VerticalLayout(incomeName,amount);
-        fieldLayout.setPadding(false);
-
-        Button cancelButton = new Button("Cancel", event -> {
-            dialog.close();
-            amount.clear();
-            incomeName.clear();
-        });
-        Button saveButton = new Button("Add", event -> {
-            try {
-                var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
-                incomeService.saveIncome(userEmail, incomeName.getValue(), amount.getValue()); //staticki za sad
-            } catch (ExecutionException | InterruptedException | NullPointerException e) {
-                e.printStackTrace();
-            }
-
-            dialog.close();
-            amount.clear();
-            incomeName.clear();
-            UI.getCurrent().getPage().reload();
-        });
-        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-        HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, cancelButton);
-        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-
-        VerticalLayout dialogLayout = new VerticalLayout(headline, fieldLayout, buttonLayout);
-        dialogLayout.addClassName("income_dialog");
-        dialogLayout.setPadding(false);
-
-        return dialogLayout;
     }
 }

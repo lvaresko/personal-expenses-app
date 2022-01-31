@@ -12,7 +12,6 @@ import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.server.VaadinSession;
 import org.springframework.stereotype.Service;
 
-
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -40,7 +39,6 @@ public class AuthService {
         os.close();
 
         int responseCode = httpURLConnection.getResponseCode();
-        System.out.println("POST Response Code :: " + responseCode);
 
         if (responseCode != 200) {
             throw new AuthException();

@@ -9,7 +9,6 @@ import com.google.firebase.cloud.FirestoreClient;
 
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -25,16 +24,15 @@ public class ExpenseService {
         Double amount;
 
         for (DocumentSnapshot document : documents) {
-           if (document.getData().get("amount").getClass().getSimpleName().equals("Double")) {
+            if (document.getData().get("amount").getClass().getSimpleName().equals("Double")) {
                 amount = (Double) document.getData().get("amount");
             } else {
-                amount =  ((Number)document.getData().get("amount")).doubleValue();
+                amount = ((Number) document.getData().get("amount")).doubleValue();
             }
 
             String category = (String) document.getData().get("category");
             String title = (String) document.getData().get("title");
             String payedWith = (String) document.getData().get("payed_with");
-            System.out.println(document.getData().get("date").getClass());
             Timestamp date = (Timestamp) document.getData().get("date");
             all_expensess.add(new Expense(category, title, amount, payedWith, date));
 
@@ -48,12 +46,7 @@ public class ExpenseService {
         Expense expense = new Expense(category, title, amount, payedWith, date);
 
         Firestore dbFirestore = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore
-                .collection("users")
-                .document(email)
-                .collection("expenses")
-                .document()
-                .set(expense);
+        ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("users").document(email).collection("expenses").document().set(expense);
 
         Income oldIncome = incomeService.getIncomeByType(email, payedWith);
         incomeService.editIncome(email, payedWith, oldIncome.getId(), oldIncome.getAmount() - amount);
