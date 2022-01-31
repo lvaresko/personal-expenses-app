@@ -8,7 +8,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 @PageTitle("Analysis")
-@Route(value = "analysis", layout = MainLayout.class)
+
 public class AnalysisView extends HorizontalLayout {
 
     public AnalysisView() {

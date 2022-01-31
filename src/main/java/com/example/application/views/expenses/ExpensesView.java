@@ -8,6 +8,7 @@ import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -27,23 +28,21 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.data.renderer.Renderer;
+import com.google.cloud.Timestamp;
+import io.opencensus.metrics.export.TimeSeries;
 
+import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @PageTitle("Expenses")
-@Route(value = "expenses", layout = MainLayout.class)
 @Tag("expenses-view")
 @JsModule("./views/expenses/expenses-view.ts")
 public class ExpensesView extends Div implements AfterNavigationObserver {
-
-   /* List<ExpenseItem> expense_items = Arrays.asList(
-            new ExpenseItem(1, "Groceries", "vegetables", 50.0),
-            new ExpenseItem(6, "Groceries", "vegetables", 50.0),
-            new ExpenseItem(2, "Shopping", "winter clothes", 400.08),
-            new ExpenseItem(3, "Food and drinks", "Pizzeria Jupiter", 355.89),
-            new ExpenseItem(4, "Services", "cleaning", 170.0));*/
 
     public ExpensesView() {
         addClassNames("expenses-view", "flex", "flex-col", "h-full");
@@ -60,8 +59,9 @@ public class ExpensesView extends Div implements AfterNavigationObserver {
 
         // add to expensesLayout
         add(expensesLayout);
-        expensesLayout.add(createTableLayout());
         expensesLayout.add(dialog, add);
+        expensesLayout.add(createTableLayout());
+
     }
 
     @Override
@@ -74,21 +74,23 @@ public class ExpensesView extends Div implements AfterNavigationObserver {
         ExpenseService expenseService = new ExpenseService();
 
         try {
-            expenses = expenseService.getExpenses("neki@vrag.com"); //staticki za sad
+            var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+            expenses = expenseService.getExpenses(userEmail);
             System.out.println(expenses);
         } catch (ExecutionException | InterruptedException | NullPointerException e) {
             e.printStackTrace();
         }
 
+        System.out.println(expenses.toArray());
+
         HorizontalLayout tableLayout = new HorizontalLayout();
         TreeGrid<Expense> treeGrid = new TreeGrid<>();
 
-        System.out.println(expenses + "aaa");
-        treeGrid.setItems(expenses); //ovdje nes ne valja zato ih ne grupira
-        treeGrid.addHierarchyColumn(Expense::getCategory).setHeader("Category");
+        treeGrid.setItems(expenses);
+        treeGrid.addColumn(Expense::getCategory).setHeader("Category");
         treeGrid.addColumn(Expense::getTitle).setHeader("Title");
         treeGrid.addColumn(Expense::getAmount).setHeader("Amount");
-
+        treeGrid.addHierarchyColumn(Expense::getDateString).setHeader("Date");
         treeGrid.setWidth("1000px");
         treeGrid.setHeight("350px");
         treeGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER); // no border
@@ -103,7 +105,8 @@ public class ExpensesView extends Div implements AfterNavigationObserver {
         List<String> incomes_list = new ArrayList<String>();
 
         try {
-            List<Income> incomes = incomeService.getIncome("neki@vrag.com");
+            var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+            List<Income> incomes = incomeService.getIncome(userEmail);
             for (Income income : incomes) {
                 incomes_list.add(income.getName());
             }
@@ -142,7 +145,10 @@ public class ExpensesView extends Div implements AfterNavigationObserver {
 
         Button saveButton = new Button("Add", event -> {
             try {
-                expenseService.saveExpense("neki@vrag.com", selectCategory.getValue(), title.getValue(), amount.getValue(), selectPayment.getValue()); //staticki za sad
+                var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+                Timestamp dateNow;
+                dateNow = Timestamp.now();
+                expenseService.saveExpense(userEmail, selectCategory.getValue(), title.getValue(), amount.getValue(), selectPayment.getValue(), dateNow);
             } catch (ExecutionException | InterruptedException | NullPointerException e) {
                 e.printStackTrace();
             }

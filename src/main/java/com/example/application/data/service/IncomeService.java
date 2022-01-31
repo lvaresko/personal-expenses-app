@@ -50,6 +50,31 @@ public class IncomeService {
         return all_incomes;
     }
 
+    public Income getIncomeByType(String email, String type) throws ExecutionException, InterruptedException, NullPointerException {
+        Firestore dbFirestore = FirestoreClient.getFirestore();
+        ApiFuture<QuerySnapshot> future = dbFirestore.collection("users").document(email).collection("incomes").get();
+
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+        for (DocumentSnapshot document : documents) {
+            String name = (String) document.getData().get("name");
+            if(name.equals(type)){
+                Double amount;
+
+                if (document.getData().get("amount").getClass().getSimpleName().equals("Double")) {
+                    amount = (Double) document.getData().get("amount");
+                } else {
+                    amount = ((Number)document.getData().get("amount")).doubleValue();
+                }
+
+            return new Income(amount, type, document.getId());
+            }
+
+        }
+
+        return new Income(0.0, type, "null");
+    }
+
     public WriteResult editIncome(String email, String name, String id, Double amount) throws InterruptedException, ExecutionException {
         Income income = new Income(amount, name, id);
 

@@ -1,13 +1,17 @@
 package com.example.application.data.entity;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import com.google.cloud.Timestamp;
+
 public class Expense {
     private String category;
     private String title;
     private Double amount;
     private String payedWith;
-    private String date;
+    Timestamp date;
 
-    public Expense(String category, String title, Double amount, String payedWith, String date) {
+    public Expense(String category, String title, Double amount, String payedWith, Timestamp date) {
         this.category = category;
         this.title = title;
         this.amount = amount;
@@ -39,8 +43,31 @@ public class Expense {
         this.amount = amount;
     }
 
+    public String getPayedWith() {
+        return payedWith;
+    }
+
+    public void setPayedWith(String payedWith) {
+        this.payedWith = payedWith;
+    }
+
+    public Timestamp getDate() {
+        return date;
+    }
+
+    public void setDate(Timestamp date) {
+        this.date = date;
+    }
+
     public void addAmount(Double new_amount) {
         this.amount += new_amount;
+    }
+
+    public String getDateString() {
+        SimpleDateFormat formatter= new SimpleDateFormat("HH:mm dd.MM.yyyy.");
+        Date date = this.date.toDate();
+        return formatter.format(date);
+
     }
 }
 

@@ -23,11 +23,12 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
+
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @PageTitle("Income")
-@Route(value = "income", layout = MainLayout.class)
 
 public class IncomeView extends Div implements AfterNavigationObserver {
 
@@ -101,7 +102,8 @@ public class IncomeView extends Div implements AfterNavigationObserver {
 
         Button trashButton = new Button(new Icon(VaadinIcon.TRASH), event -> {
             try {
-                incomeService.deleteIncome("neki@vrag.com", income.getId()); //staticki za sad
+                var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+                incomeService.deleteIncome(userEmail, income.getId()); //staticki za sad
             } catch (ExecutionException | InterruptedException | NullPointerException e) {
                 e.printStackTrace();
             }
@@ -122,7 +124,8 @@ public class IncomeView extends Div implements AfterNavigationObserver {
         List<Income> incomes = List.of();
 
         try {
-            incomes = incomeService.getIncome("neki@vrag.com"); //staticki za sad
+            var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+            incomes = incomeService.getIncome(userEmail);
         } catch (ExecutionException | InterruptedException | NullPointerException e) {
             e.printStackTrace();
         }
@@ -154,7 +157,8 @@ public class IncomeView extends Div implements AfterNavigationObserver {
         });
         Button saveButton = new Button("Save", event -> {
             try {
-                incomeService.editIncome("neki@vrag.com", incomeName, id, incomeAmount.getValue()); //staticki za sad
+                var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+                incomeService.editIncome(userEmail, incomeName, id, incomeAmount.getValue()); //staticki za sad
             } catch (ExecutionException | InterruptedException | NullPointerException e) {
                 e.printStackTrace();
             }
@@ -198,7 +202,8 @@ public class IncomeView extends Div implements AfterNavigationObserver {
         });
         Button saveButton = new Button("Add", event -> {
             try {
-                incomeService.saveIncome("neki@vrag.com", incomeName.getValue(), amount.getValue()); //staticki za sad
+                var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+                incomeService.saveIncome(userEmail, incomeName.getValue(), amount.getValue()); //staticki za sad
             } catch (ExecutionException | InterruptedException | NullPointerException e) {
                 e.printStackTrace();
             }

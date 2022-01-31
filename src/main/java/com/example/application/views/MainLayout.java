@@ -4,6 +4,7 @@ package com.example.application.views;
 import com.example.application.views.analysis.AnalysisView;
 import com.example.application.views.expenses.ExpensesView;
 import com.example.application.views.income.IncomeView;
+import com.example.application.views.logout.LogoutView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -130,6 +131,7 @@ public class MainLayout extends AppLayout {
                 new MenuItemInfo("Expenses", "la la-dollar-sign", ExpensesView.class), //
 
                 new MenuItemInfo("Analysis", "la la-chart-bar", AnalysisView.class), //
+                new MenuItemInfo("Logout", "la la-logout", LogoutView.class), //
 
         };
     }

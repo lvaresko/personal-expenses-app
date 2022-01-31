@@ -1,6 +1,7 @@
 package com.example.application.views.login;
 
 import com.example.application.data.service.AuthService;
+import com.example.application.views.register.RegisterView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -59,9 +60,17 @@ public class LoginView extends VerticalLayout {
 
         HorizontalLayout footer = new HorizontalLayout();
         Span newUser = new Span("Don't have an account?");
-        Anchor register = new Anchor();
-        register.setText("Register here");
-        //register.getElement().addEventListener(e -> register.getUI().ifPresent(ui -> ui.navigate("register")));
+        Button register = new Button("Register here", e -> {
+            UI.getCurrent().navigate(RegisterView.class);
+        });
+        register.getStyle().set("height", "30px");
+        register.getStyle().set("font-size", "16px");
+        register.getStyle().set("background", "white");
+        register.getStyle().set("vertical-align", "center");
+        register.getStyle().set("margin", "0px");
+
+
+
         footer.add(newUser, register);
 
         layout.setSizeFull();
