@@ -2,7 +2,6 @@ package com.example.application.views.income;
 
 import com.example.application.data.entity.Income;
 import com.example.application.data.service.IncomeService;
-import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -22,7 +21,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
 import java.util.List;
@@ -33,9 +31,19 @@ import java.util.concurrent.ExecutionException;
 public class IncomeView extends Div implements AfterNavigationObserver {
 
     Grid<Income> grid = new Grid<>();
+    Double total_income = 0.0;
 
     public IncomeView() {
         addClassName("income-view");
+
+        H2 headline = new H2("Total income: " + getTotal_income() + " $");
+        headline.getStyle().set("margin-top", "0").set("padding", "20px 0 0 20px");
+
+        if (total_income < 0) {
+            headline.getElement().getStyle().set("color", "red");
+        } else {
+            headline.getElement().getStyle().set("color", "green");
+        }
 
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);
         grid.addComponentColumn(income -> createCard(income));
@@ -51,7 +59,7 @@ public class IncomeView extends Div implements AfterNavigationObserver {
         addButton.addClassName("income_add_btn");
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        add(grid, dialog1, addButton);
+        add(headline, grid, dialog1, addButton);
     }
 
     private HorizontalLayout createCard(Income income) {
@@ -131,6 +139,25 @@ public class IncomeView extends Div implements AfterNavigationObserver {
         }
 
         grid.setItems(incomes);
+    }
+
+    public Double getTotal_income() {
+        IncomeService incomeService = new IncomeService();
+        List<Income> incomes = List.of();
+        Double total_income = 0.0;
+
+        try {
+            var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+            incomes = incomeService.getIncome(userEmail);
+        } catch (ExecutionException | InterruptedException | NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        for (Income income : incomes) {
+            total_income += income.getAmount();
+        }
+
+        return total_income;
     }
 
 
