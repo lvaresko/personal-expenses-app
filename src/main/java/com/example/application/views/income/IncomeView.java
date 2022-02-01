@@ -1,7 +1,11 @@
 package com.example.application.views.income;
 
 import com.example.application.data.entity.Income;
+import com.example.application.data.service.FirebaseInitialize;
 import com.example.application.data.service.IncomeService;
+import com.example.application.views.MainLayout;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.FirebaseDatabase;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -21,12 +25,15 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @PageTitle("Income")
+@Route(value = "income", layout = MainLayout.class)
 
 public class IncomeView extends Div implements AfterNavigationObserver {
 
@@ -34,6 +41,14 @@ public class IncomeView extends Div implements AfterNavigationObserver {
     Double total_income = 0.0;
 
     public IncomeView() {
+
+        System.out.println(FirebaseApp.getApps());
+        if (!FirebaseApp.getApps().isEmpty()) {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        }
+
+
+
         addClassName("income-view");
 
         H2 headline = new H2("Total income: " + getTotal_income() + " $");
@@ -77,7 +92,7 @@ public class IncomeView extends Div implements AfterNavigationObserver {
         incomeAmount.setPrefixComponent(dollarPrefix);
         incomeAmount.getStyle().set("margin", "0 0 0 0");
 
-        var initial_val = incomeAmount.getValue();
+        Double initial_val = incomeAmount.getValue();
 
         Button cancelButton = new Button("Cancel", event -> {
             incomeAmount.setValue(initial_val);
@@ -85,7 +100,7 @@ public class IncomeView extends Div implements AfterNavigationObserver {
         });
         Button saveButton = new Button("Save", event -> {
             try {
-                var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+                String userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
                 incomeService.editIncome(userEmail, incomeName, id, incomeAmount.getValue()); //staticki za sad
             } catch (ExecutionException | InterruptedException | NullPointerException e) {
                 e.printStackTrace();
@@ -130,7 +145,7 @@ public class IncomeView extends Div implements AfterNavigationObserver {
         });
         Button saveButton = new Button("Add", event -> {
             try {
-                var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+                String userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
                 incomeService.saveIncome(userEmail, incomeName.getValue(), amount.getValue()); //staticki za sad
             } catch (ExecutionException | InterruptedException | NullPointerException e) {
                 e.printStackTrace();
@@ -201,7 +216,7 @@ public class IncomeView extends Div implements AfterNavigationObserver {
 
         Button trashButton = new Button(new Icon(VaadinIcon.TRASH), event -> {
             try {
-                var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+                String userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
                 incomeService.deleteIncome(userEmail, income.getId()); //staticki za sad
             } catch (ExecutionException | InterruptedException | NullPointerException e) {
                 e.printStackTrace();
@@ -219,10 +234,10 @@ public class IncomeView extends Div implements AfterNavigationObserver {
     public void afterNavigation(AfterNavigationEvent event) {
         IncomeService incomeService = new IncomeService();
 
-        List<Income> incomes = List.of();
+        List<Income> incomes = new ArrayList<>();
 
         try {
-            var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+            String userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
             incomes = incomeService.getIncome(userEmail);
         } catch (ExecutionException | InterruptedException | NullPointerException e) {
             e.printStackTrace();
@@ -233,11 +248,11 @@ public class IncomeView extends Div implements AfterNavigationObserver {
 
     public Double getTotal_income() {
         IncomeService incomeService = new IncomeService();
-        List<Income> incomes = List.of();
+        List<Income> incomes = new ArrayList<>();
         Double total_income = 0.0;
 
         try {
-            var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+            String userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
             incomes = incomeService.getIncome(userEmail);
         } catch (ExecutionException | InterruptedException | NullPointerException e) {
             e.printStackTrace();

@@ -1,22 +1,16 @@
 package com.example.application.data.service;
 
-import com.example.application.views.logout.LogoutView;
-import com.example.application.views.MainLayout;
-import com.example.application.views.analysis.AnalysisView;
-import com.example.application.views.expenses.ExpensesView;
-import com.example.application.views.income.IncomeView;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
-import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.server.VaadinSession;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
@@ -24,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 public class AuthService {
     private static final String POST_URL = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=";
     String API_KEY = "AIzaSyC_0Y8THB9o7G9L2oi5JQwyDvJALL9YATg";
+
 
     public void authenticate(String email, String password) throws AuthException, IOException {
 
@@ -43,12 +38,12 @@ public class AuthService {
         if (responseCode != 200) {
             throw new AuthException();
         } else {
-            createRoutes();
+            //createRoutes();
             VaadinSession.getCurrent().getSession().setAttribute("email", email);
         }
     }
 
-    private void createRoutes() {
+    /*private void createRoutes() {
         getAuthorizedRoutes().stream().forEach(route -> {
             if (route.name.equals("Logout")) {
                 RouteConfiguration.forSessionScope().setRoute(route.route, route.view);
@@ -69,19 +64,21 @@ public class AuthService {
         return routes;
     }
 
+     */
+
     public UserRecord createUser(String email, String password) throws ExecutionException, InterruptedException, FirebaseAuthException {
         UserRecord.CreateRequest request = new UserRecord.CreateRequest();
         request.setEmail(email);
         request.setPassword(password);
         UserRecord result = FirebaseAuth.getInstance().createUser(request);
-        createRoutes();
+        //createRoutes();
         VaadinSession.getCurrent().getSession().setAttribute("email", email);
         return result;
     }
 
-    public record AuthorizedRoute(String route, String name, Class view) {
+    /*public record AuthorizedRoute(String route, String name, Class view) {
 
-    }
+    }*/
 
     public class AuthException extends Exception {
 

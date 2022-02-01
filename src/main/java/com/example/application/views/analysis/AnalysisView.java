@@ -2,6 +2,7 @@ package com.example.application.views.analysis;
 
 import com.example.application.data.entity.Expense;
 import com.example.application.data.service.ExpenseService;
+import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.Configuration;
@@ -10,6 +11,7 @@ import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
 import java.util.List;
@@ -18,12 +20,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @PageTitle("Analysis")
+@Route(value = "analysis", layout= MainLayout.class)
 
 public class AnalysisView extends HorizontalLayout {
 
     public AnalysisView() throws ExecutionException, InterruptedException {
         ExpenseService incomeService = new ExpenseService();
-        var userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
+        String userEmail = VaadinSession.getCurrent().getSession().getAttribute("email").toString();
 
         addClassName("analysis-view");
 
